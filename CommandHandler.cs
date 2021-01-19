@@ -17,16 +17,15 @@ namespace AcademyBot
         {
             _commands = commands;
             _client = client;
+            InstallingCommands();
+        }
+
+        private void InstallingCommands()
+        {
             _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: null);
 
             _client.MessageReceived += HandleCommandAsync;
         }
-
-        /*public async Task InstallCommandsAsync()
-        {
-            _client.MessageReceived += HandleCommandAsync;
-            await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: null);
-        }*/
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
         {

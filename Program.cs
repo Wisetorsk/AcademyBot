@@ -16,13 +16,30 @@ namespace AcademyBot
         private bool debug;
         private JObject IDs = JObject.Parse(File.ReadAllText(@"../../../id.json"));
 
-        private readonly ulong generalTextChannel = 694326574601994353;
+        #region serverIDs
+        private readonly ulong _ServerID = 694326574601994350;
+        #endregion
 
+        #region channelIDs
+        private readonly ulong _GeneralTextID = 694326574601994353;
+        //private readonly ulong _BotChannelID = 800061983973179412;
+        private readonly ulong _BotErrorChannelID = 800066416518365206;
+        #endregion
+
+        #region guildObjects
+        //SocketGuild server;
+        #endregion
+
+        #region channelObjects
+        private SocketTextChannel generalTextChannel;
+        private SocketTextChannel botChannel;
+        #endregion
 
         private DiscordSocketClient _client;
         private CommandService _commands;
 
         private CommandHandler _handler;
+
 
         public static void Main(string[] args)
         {
@@ -31,33 +48,38 @@ namespace AcademyBot
 
         public async Task MainAsync()
         {
-            SetDebugLevel();
+            SetDebugLevel(); //Removable
 
 
             _client = new DiscordSocketClient();
             _commands = new CommandService();
-
             _handler = new CommandHandler(_client, _commands);
 
             _client.Log += Log; //Subscribe to the Logging method
             //_client.MessageReceived += DoShit; //Moved into CommandHandler object
-            _client.Ready += BotReady;
-            
+            //_client.Ready += BotReady; //removable
 
+            generalTextChannel = _client.GetGuild(_ServerID).GetTextChannel(_GeneralTextID);
+            //botChannel = _client.GetGuild(_ServerID).GetTextChannel(_BotChannelID);
 
             var token = File.ReadAllText("../../../../token.txt");
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
+            await _client.SetStatusAsync(UserStatus.Online);
+
+            await generalTextChannel.SendMessageAsync("TESTING");
 
             await Task.Delay(-1);
 
         }
 
+
+
         private Task BotReady()
         {
             Console.WriteLine("The bot is now ready");
-            Console.WriteLine(IDs["Server"]);
+            //Console.WriteLine(IDs["Server"]);
             
             return Task.CompletedTask;
         }
@@ -85,6 +107,7 @@ namespace AcademyBot
         {
             /*
              Starts a companion program that waits for main program to exit, or force quits it, then pulls the most recent build from github, compiles it and re-launches the bot. 
+            Could be a batch file or shell script
              */
         }
 
