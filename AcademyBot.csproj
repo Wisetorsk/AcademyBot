@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Folder Include="commands\" />
+    <Folder Include="Templates\" />
   </ItemGroup>
 
 </Project>

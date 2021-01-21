@@ -1,12 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using AcademyBot.Objects;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
+using System;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace AcademyBot
 {
@@ -17,29 +17,39 @@ namespace AcademyBot
         private JObject IDs = JObject.Parse(File.ReadAllText(@"../../../id.json"));
 
         #region serverIDs
-        private readonly ulong _ServerID = 694326574601994350;
+        private readonly ulong serverID = 694326574601994350;
         #endregion
 
         #region channelIDs
-        private readonly ulong _GeneralTextID = 694326574601994353;
-        //private readonly ulong _BotChannelID = 800061983973179412;
-        private readonly ulong _BotErrorChannelID = 800066416518365206;
+        private readonly ulong generalTextID = 694326574601994353;
+        private readonly ulong botChannelID = 800061983973179412;
+        private readonly ulong botErrorChannelID = 800066416518365206;
         #endregion
 
         #region guildObjects
-        //SocketGuild server;
+        public static SocketGuild server;
+
         #endregion
 
-        #region channelObjects
-        private SocketTextChannel generalTextChannel;
-        private SocketTextChannel botChannel;
+        #region channelObjects // Can be replaced with Messenger object
+        public static SocketTextChannel generalTextChannel;
+        public static SocketTextChannel botChannel;
+        public static SocketTextChannel botErrorChannel;
         #endregion
 
-        private DiscordSocketClient _client;
-        private CommandService _commands;
+        private DiscordSocketClient client;
+        private CommandService commands;
 
-        private CommandHandler _handler;
+        private CommandHandler handler;
 
+        //private Messenger messageService;
+
+
+        #region Properties
+
+        public Messenger MessageService { get; private set; }
+
+        #endregion
 
         public static void Main(string[] args)
         {
@@ -51,36 +61,35 @@ namespace AcademyBot
             SetDebugLevel(); //Removable
 
 
-            _client = new DiscordSocketClient();
-            _commands = new CommandService();
-            _handler = new CommandHandler(_client, _commands);
+            client = new DiscordSocketClient();
+            commands = new CommandService();
+            handler = new CommandHandler(client, commands);
 
-            _client.Log += Log; //Subscribe to the Logging method
-            //_client.MessageReceived += DoShit; //Moved into CommandHandler object
-            //_client.Ready += BotReady; //removable
-
-            generalTextChannel = _client.GetGuild(_ServerID).GetTextChannel(_GeneralTextID);
-            //botChannel = _client.GetGuild(_ServerID).GetTextChannel(_BotChannelID);
+            client.Log += Log; //Subscribe to the Logging method
+            client.Ready += ReadyAsync; // Channel and server client objects can only be loaded after the bot has completed startup!!!
 
             var token = File.ReadAllText("../../../../token.txt");
 
-            await _client.LoginAsync(TokenType.Bot, token);
-            await _client.StartAsync();
-            await _client.SetStatusAsync(UserStatus.Online);
-
-            await generalTextChannel.SendMessageAsync("TESTING");
+            await client.LoginAsync(TokenType.Bot, token);
+            await client.StartAsync();
+            await client.SetStatusAsync(UserStatus.Online);
 
             await Task.Delay(-1);
 
         }
 
-
-
-        private Task BotReady()
+        private async Task<Task> ReadyAsync() // Loads Objects after the bot is done initializing
         {
-            Console.WriteLine("The bot is now ready");
-            //Console.WriteLine(IDs["Server"]);
-            
+            server = client.GetGuild(serverID);
+            MessageService = new Messenger(client, serverID, generalTextID, botChannelID, botErrorChannelID);
+            await MessageService.SendAsync(generalTextID, "Bot is now up and running! Ask me something by tagging or using '![command]'");
+            EmbedBuilder builder = new EmbedBuilder();
+            builder.WithTitle("Just a title for the testmessage");
+            builder.AddField("This is a Field: ", "Another part of it", true);
+            builder.AddField("This is another Field: ", "Another part of that", false);
+            builder.WithThumbnailUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Noto_Emoji_KitKat_263a.svg/200px-Noto_Emoji_KitKat_263a.svg.png");
+            builder.WithColor(Color.Blue);
+            await MessageService.SendEmbedAsync(botChannelID, builder);
             return Task.CompletedTask;
         }
 

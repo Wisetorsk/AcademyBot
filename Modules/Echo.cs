@@ -2,7 +2,7 @@
 using Discord;
 using Discord.Commands;
 
-namespace DiscordBot.Modules
+namespace AcademyBot.Modules
 {
     public class Echo : ModuleBase<SocketCommandContext>
     {
