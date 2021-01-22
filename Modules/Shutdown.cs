@@ -1,10 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
-using System.Threading.Tasks;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace AcademyBot.Modules

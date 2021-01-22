@@ -92,7 +92,8 @@ namespace AcademyBot
                 Console.WriteLine($"Reaction added to message: {arg1.Id}");
                 await invokingUser.SendMessageAsync("Heisann");
                 await arg2.SendMessageAsync($"Reply! <@{arg3.UserId}>");
-            } else
+            }
+            else
             {
                 //await MessageService.SendAsync(botErrorChannelID, "IsBOT!");
             }
@@ -105,11 +106,11 @@ namespace AcademyBot
             server = client.GetGuild(serverID);
             MessageService = new Messenger(client, serverID, generalTextID, botChannelID, botErrorChannelID);
             await MessageService.SendAsync(
-                ulong.Parse(IDs["TextChannels"]["General"].ToString()), 
+                ulong.Parse(IDs["TextChannels"]["General"].ToString()),
                 "Bot is now up and running!"
                 );
 
-            if(debug)
+            if (debug)
             {
                 await MessageService.SendEmbedAsync(
                 ulong.Parse(IDs["TextChannels"]["Bot"].ToString()),
@@ -160,7 +161,7 @@ namespace AcademyBot
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.WriteLine($"[{time.ToLocalTime()}]\t{message} at line {lineNumber} ({caller})");
             Console.ResetColor();
-            
+
         }
 
         private Task Log(LogMessage msg)
@@ -168,7 +169,7 @@ namespace AcademyBot
             if (saveLog)
             {
                 //Write some shit to file
-                
+
             }
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;

@@ -1,8 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AcademyBot.Objects
@@ -34,8 +32,8 @@ namespace AcademyBot.Objects
         }
 
         public async Task SendEmbedAsync(
-            ulong channel, 
-            string title, 
+            ulong channel,
+            string title,
             Dictionary<string, string>[] fields)
         {
             EmbedBuilder embed = new EmbedBuilder();

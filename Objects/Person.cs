@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace AcademyBot.Objects
 {
@@ -15,7 +13,8 @@ namespace AcademyBot.Objects
             if (roles is null)
             {
                 Roles = new List<ulong>();
-            } else
+            }
+            else
             {
                 Roles = roles;
             }
@@ -40,9 +39,10 @@ namespace AcademyBot.Objects
 
         public bool AddRolesFromString(string v)
         {
-                        
-            
-            if (v.Length < 10) { 
+
+
+            if (v.Length < 10)
+            {
                 //Console.WriteLine("no Roles Found");
                 return false;
             };
@@ -62,7 +62,8 @@ namespace AcademyBot.Objects
             {
                 Roles.Remove(roleId);
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }

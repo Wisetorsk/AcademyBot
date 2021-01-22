@@ -1,12 +1,8 @@
-﻿using AcademyBot.Objects;
-using Discord.Commands;
+﻿using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AcademyBot

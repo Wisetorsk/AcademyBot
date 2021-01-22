@@ -1,9 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AcademyBot.Modules
@@ -18,7 +14,7 @@ namespace AcademyBot.Modules
             var arguments = remainder.Split(' ');
             bool outcome = ulong.TryParse(remainder, out ulong msgId);
 
-            
+
             if (!outcome)
             {
                 var mod = remainder.Split(' ')[0];
@@ -37,13 +33,14 @@ namespace AcademyBot.Modules
                     default:
                         break;
                 }
-            } else
+            }
+            else
             {
                 string response = $"Trying to remove message with id: '{msgId}'";
                 await Context.Channel.DeleteMessageAsync(msgId);
                 await Context.Guild.GetTextChannel(800061983973179412).SendMessageAsync(response);
             }
-            
+
         }
     }
 }
