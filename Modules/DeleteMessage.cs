@@ -21,7 +21,7 @@ namespace AcademyBot.Modules
                 switch (mod)
                 {
                     case "all":
-                        /*
+                        /* // Shit just don't work...
                         Console.WriteLine("Deleting all");
                         var messages = Context.Channel.GetMessagesAsync();
                         foreach (var message in messages)
