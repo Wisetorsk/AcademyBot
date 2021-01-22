@@ -1,7 +1,10 @@
-﻿using Discord.Commands;
+﻿using AcademyBot.Objects;
+using Discord.Commands;
 using Discord.WebSocket;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,9 +15,13 @@ namespace AcademyBot
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
+        private readonly JObject IDs = JObject.Parse(File.ReadAllText(@"../../../id.json"));
+        private readonly ulong errorChannel;
 
         public CommandHandler(DiscordSocketClient client, CommandService commands)
         {
+            //var botChannelID = ulong.Parse(IDs["TextChannels"]["Bot"].ToString());
+            errorChannel = ulong.Parse(IDs["TextChannels"]["Bot_errors"].ToString());
             _commands = commands;
             _client = client;
             InstallingCommands();
@@ -29,11 +36,9 @@ namespace AcademyBot
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
         {
-            Program.SendDebugMsg();
-            //Console.WriteLine("got something");
+            //Program.SendDebugMsg();
             var message = messageParam as SocketUserMessage;
             if (message == null) return;
-
             int argPos = 0;
 
             // Determine if the message has the selected prefix or the sender is a bot
@@ -42,7 +47,9 @@ namespace AcademyBot
                 message.Author.IsBot)
                 return; //breaks out
 
+            // Deletes the invoking message 
             var context = new SocketCommandContext(_client, message);
+            await context.Channel.DeleteMessageAsync(context.Message.Id);
 
             var result = await _commands.ExecuteAsync(
             context: context,
@@ -50,9 +57,11 @@ namespace AcademyBot
             services: null);
             if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
             {
-                await context.Channel.SendMessageAsync(result.ErrorReason);
+                //await context.Channel.SendMessageAsync(result.ErrorReason);
+                await Program.MessageService.SendAsync(errorChannel, result.ErrorReason);
             }
         }
+
     }
 
 }

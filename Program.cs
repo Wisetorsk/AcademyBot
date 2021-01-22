@@ -4,6 +4,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace AcademyBot
         private readonly ulong serverID = 694326574601994350;
         #endregion
 
-        #region channelIDs
+        #region channelIDs  // Replace with IDs Jobject parsing
         private readonly ulong generalTextID = 694326574601994353;
         private readonly ulong botChannelID = 800061983973179412;
         private readonly ulong botErrorChannelID = 800066416518365206;
@@ -31,23 +32,15 @@ namespace AcademyBot
 
         #endregion
 
-        #region channelObjects // Can be replaced with Messenger object
-        public static SocketTextChannel generalTextChannel;
-        public static SocketTextChannel botChannel;
-        public static SocketTextChannel botErrorChannel;
-        #endregion
-
         private DiscordSocketClient client;
         private CommandService commands;
 
         private CommandHandler handler;
 
-        //private Messenger messageService;
-
 
         #region Properties
 
-        public Messenger MessageService { get; private set; }
+        public static Messenger MessageService { get; private set; }
 
         #endregion
 
@@ -67,6 +60,7 @@ namespace AcademyBot
 
             client.Log += Log; //Subscribe to the Logging method
             client.Ready += ReadyAsync; // Channel and server client objects can only be loaded after the bot has completed startup!!!
+            client.ReactionAdded += ReactToReaction;
 
             var token = File.ReadAllText("../../../../token.txt");
 
@@ -78,18 +72,42 @@ namespace AcademyBot
 
         }
 
+        private async Task<Task> ReactToReaction(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
+        {
+            var invokingUser = client.GetGuild(serverID).GetUser(arg3.UserId);
+            if (!invokingUser.IsBot)
+            {
+                Console.WriteLine($"Reaction added to message: {arg1.Id}");
+                await invokingUser.SendMessageAsync("Heisann");
+                await arg2.SendMessageAsync($"Reply! <@{arg3.UserId}>");
+            } else
+            {
+                //await MessageService.SendAsync(botErrorChannelID, "IsBOT!");
+            }
+
+            return Task.CompletedTask;
+        }
+
         private async Task<Task> ReadyAsync() // Loads Objects after the bot is done initializing
         {
             server = client.GetGuild(serverID);
             MessageService = new Messenger(client, serverID, generalTextID, botChannelID, botErrorChannelID);
-            await MessageService.SendAsync(generalTextID, "Bot is now up and running! Ask me something by tagging or using '![command]'");
-            EmbedBuilder builder = new EmbedBuilder();
-            builder.WithTitle("Just a title for the testmessage");
-            builder.AddField("This is a Field: ", "Another part of it", true);
-            builder.AddField("This is another Field: ", "Another part of that", false);
-            builder.WithThumbnailUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Noto_Emoji_KitKat_263a.svg/200px-Noto_Emoji_KitKat_263a.svg.png");
-            builder.WithColor(Color.Blue);
-            await MessageService.SendEmbedAsync(botChannelID, builder);
+            await MessageService.SendAsync(
+                ulong.Parse(IDs["TextChannels"]["General"].ToString()), 
+                "Bot is now up and running!"
+                );
+
+            if(debug)
+            {
+                await MessageService.SendEmbedAsync(
+                ulong.Parse(IDs["TextChannels"]["Bot"].ToString()),
+                "DebugMSG",
+                new Dictionary<string, string>[] {
+                    Messenger.MakeFieldDict("Action", "Startup"),
+                    Messenger.MakeFieldDict("Time", DateTime.Now.ToLongTimeString())}
+                   );
+            }
+
             return Task.CompletedTask;
         }
 
@@ -103,11 +121,12 @@ namespace AcademyBot
             Console.Write("Log to file? (NOT YET IMPLEMENTED!)  (y/n) [Default 'y']: ");
             response = Console.ReadLine();
             saveLog = string.IsNullOrEmpty(response) || response.Contains('y') || response.Contains('Y');
-
+            Console.Clear();
+            Console.WriteLine("State: ");
             Console.WriteLine(new String('-', Console.WindowWidth));
             Console.WriteLine(saveLog ? "Extended log ON" : "Extended log OFF");
             Console.WriteLine(debug ? "Debug mode ON" : "Debug mode OFF");
-            Console.WriteLine(new String('-', Console.WindowWidth));
+            Console.WriteLine(new String('=', Console.WindowWidth));
             Console.ResetColor();
             Console.WriteLine();
         }

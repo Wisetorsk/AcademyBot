@@ -32,5 +32,30 @@ namespace AcademyBot.Objects
         {
             await Channels[channel].SendMessageAsync("", false, embed.Build());
         }
+
+        public async Task SendEmbedAsync(
+            ulong channel, 
+            string title, 
+            Dictionary<string, string>[] fields)
+        {
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle(title);
+            foreach (var pair in fields)
+            {
+                embed.AddField(pair["Title"], pair["Content"]);
+            }
+            await Channels[channel].SendMessageAsync("", false, embed.Build());
+        }
+
+        public static Dictionary<string, string> MakeFieldDict(string title, string content)
+        {
+            return new Dictionary<string, string>() { { "Title", title }, { "Content", content } };
+        }
+
+        public void SendDirectMessage(ulong id, string text)
+        {
+            Client.GetUser(id).SendMessageAsync(text);
+        }
+
     }
 }
