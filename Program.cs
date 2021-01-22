@@ -15,7 +15,7 @@ namespace AcademyBot
     {
         private bool saveLog;
         private bool debug;
-        private JObject IDs = JObject.Parse(File.ReadAllText(@"../../../id.json"));
+        private JObject IDs = JObject.Parse(File.ReadAllText(@"../../../json/id.json"));
 
         #region serverIDs
         private readonly ulong serverID = 694326574601994350;
@@ -41,7 +41,7 @@ namespace AcademyBot
         #region Properties
 
         public static Messenger MessageService { get; private set; }
-
+        public Population People { get; set; }
         #endregion
 
         public static void Main(string[] args)
@@ -61,6 +61,18 @@ namespace AcademyBot
             client.Log += Log; //Subscribe to the Logging method
             client.Ready += ReadyAsync; // Channel and server client objects can only be loaded after the bot has completed startup!!!
             client.ReactionAdded += ReactToReaction;
+
+            People = new Population();
+            People.LoadPeople();
+            foreach (var p in People.People)
+            {
+                Console.WriteLine(p.ToString());
+            }
+            //var testPerson = new Person(12341234, new List<ulong>() {1111111111111111, 2222222222222222 }, false);
+            //Console.WriteLine(People.LoadPerson(112955646701297664));
+            //People.SavePerson(testPerson);
+            //People.WriteJson();
+
 
             var token = File.ReadAllText("../../../../token.txt");
 

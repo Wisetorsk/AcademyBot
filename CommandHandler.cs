@@ -15,7 +15,7 @@ namespace AcademyBot
     {
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
-        private readonly JObject IDs = JObject.Parse(File.ReadAllText(@"../../../id.json"));
+        private readonly JObject IDs = JObject.Parse(File.ReadAllText(@"../../../json/id.json"));
         private readonly ulong errorChannel;
 
         public CommandHandler(DiscordSocketClient client, CommandService commands)
