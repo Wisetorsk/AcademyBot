@@ -46,7 +46,6 @@ namespace AcademyBot
             // Deletes the invoking message 
             var context = new SocketCommandContext(_client, message);
             await context.Channel.DeleteMessageAsync(context.Message.Id);
-
             var result = await _commands.ExecuteAsync(
             context: context,
             argPos: argPos,

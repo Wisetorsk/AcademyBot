@@ -40,7 +40,7 @@ namespace AcademyBot.Objects
             StartInfo = new ProcessStartInfo();
             StartInfo.WindowStyle = ProcessWindowStyle.Normal; //Hidden
             StartInfo.FileName = "cmd.exe";
-            StartInfo.Arguments = $"/C cd ../../../ && start C:/Windows/Microsoft.NET/Framework64/v4.0.30319/msbuild.exe {SolutionName} > C:/Users/thewi/source/repos/AcademyBot/log.txt"; // && set /p=press any key to continue && start bin/Debug/netcoreapp3.1/{SolutionName.Replace("sln", "exe")}";
+            StartInfo.Arguments = $"/C cd ../../../ && start C:/Windows/Microsoft.NET/Framework64/v4.0.30319/msbuild.exe {SolutionName} -p:OutDir=C:/Users/thewi/source/repos/AcademyBot > C:/Users/thewi/source/repos/AcademyBot/log.txt"; // && set /p=press any key to continue && start bin/Debug/netcoreapp3.1/{SolutionName.Replace("sln", "exe")}";
             LocalProcess.StartInfo = StartInfo;
             LocalProcess.Start();
         }
