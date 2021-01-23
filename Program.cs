@@ -42,6 +42,7 @@ namespace AcademyBot
 
         public static Messenger MessageService { get; private set; }
         public Population People { get; set; }
+        public static Updater UpdateModule { get; set; }
         #endregion
 
         public static void Main(string[] args)
@@ -61,6 +62,7 @@ namespace AcademyBot
             client.Log += Log; //Subscribe to the Logging method
             client.Ready += ReadyAsync; // Channel and server client objects can only be loaded after the bot has completed startup!!!
             client.ReactionAdded += ReactToReaction;
+
 
             People = new Population();
             People.LoadPeople();
@@ -105,6 +107,7 @@ namespace AcademyBot
         {
             server = client.GetGuild(serverID);
             MessageService = new Messenger(client, serverID, generalTextID, botChannelID, botErrorChannelID);
+            UpdateModule = new Updater("AcademyBot.sln");
             await MessageService.SendAsync(
                 ulong.Parse(IDs["TextChannels"]["General"].ToString()),
                 "Bot is now up and running!"

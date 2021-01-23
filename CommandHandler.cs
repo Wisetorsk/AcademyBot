@@ -53,7 +53,6 @@ namespace AcademyBot
             services: null);
             if (!result.IsSuccess && result.Error != CommandError.UnknownCommand)
             {
-                //await context.Channel.SendMessageAsync(result.ErrorReason);
                 await Program.MessageService.SendAsync(errorChannel, result.ErrorReason);
             }
         }
