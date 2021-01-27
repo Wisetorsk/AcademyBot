@@ -1,22 +1,42 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AcademyBot.Objects
 {
-    class Person
+    public class Person
     {
         public ulong Id { get; private set; }
-        public List<ulong> Roles { get; set; }
-        public bool Admin { get; set; }
+        public List<ulong> Roles { get; set; } = new List<ulong>();
+        public bool Admin { get; private set; } = false;
         public Person(ulong id, List<ulong> roles = null, bool admin = false)
         {
             Id = id;
             if (roles is null)
             {
-                Roles = new List<ulong>();
+                Roles = new List<ulong>(); //!!!!!!!!
             }
             else
             {
                 Roles = roles;
+            }
+            Admin = admin;
+        }
+
+        public Person(ulong id)
+        {
+            Id = id;
+        }
+
+        public Person(ulong id, string roles = null, bool admin = false)
+        {
+            Id = id;
+            if (roles is null || roles.Length < 1)
+            {
+                Roles = new List<ulong>();
+            }
+            else
+            {
+                AddRolesFromString(roles);
             }
             Admin = admin;
         }
@@ -28,7 +48,7 @@ namespace AcademyBot.Objects
 
         public string RoleString()
         {
-            if (Roles.Count == 0) return "";
+            if (Roles is null || Roles.Count == 0) return "[]";
             var outString = "[";
             for (int i = 0; i < Roles.Count; i++)
             {
@@ -37,21 +57,18 @@ namespace AcademyBot.Objects
             return outString;
         }
 
-        public bool AddRolesFromString(string v)
+        public bool AddRolesFromString(string roleInputString)
         {
-
-
-            if (v.Length < 10)
+            if (roleInputString.Length < 10)
             {
                 //Console.WriteLine("no Roles Found");
                 return false;
             };
-            var snippet = v.Substring(1, v.Length - 2);
-            var stringRoles = snippet.Split(',');
+            var stringRoles = roleInputString.Split(',');
             foreach (var role in stringRoles)
             {
                 var result = ulong.TryParse(role, out ulong roleUlong);
-                if (result) AddRole(roleUlong);
+                if (result) Roles.Add(roleUlong);
             }
             return true;
         }

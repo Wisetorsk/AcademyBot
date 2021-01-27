@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcademyBot", "AcademyBot.csproj", "{6040B698-882C-4F97-B653-4DE292EF9DC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AcademyBot", "AcademyBot.csproj", "{6040B698-882C-4F97-B653-4DE292EF9DC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPeopleAndPersons", "..\TestPeopleAndPersons\TestPeopleAndPersons.csproj", "{00B24EA5-347C-460A-B07F-7C740BD5FC03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringImageInterpolator", "..\StringImageInterpolator\StringImageInterpolator.csproj", "{E511B6E3-75E9-44F8-9DE9-602506617E61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{6040B698-882C-4F97-B653-4DE292EF9DC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6040B698-882C-4F97-B653-4DE292EF9DC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6040B698-882C-4F97-B653-4DE292EF9DC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00B24EA5-347C-460A-B07F-7C740BD5FC03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00B24EA5-347C-460A-B07F-7C740BD5FC03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00B24EA5-347C-460A-B07F-7C740BD5FC03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00B24EA5-347C-460A-B07F-7C740BD5FC03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E511B6E3-75E9-44F8-9DE9-602506617E61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E511B6E3-75E9-44F8-9DE9-602506617E61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E511B6E3-75E9-44F8-9DE9-602506617E61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E511B6E3-75E9-44F8-9DE9-602506617E61}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

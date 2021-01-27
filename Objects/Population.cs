@@ -2,10 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace AcademyBot.Objects
 {
-    class Population
+    public class Population
     {
         public List<Person> People { get; set; }
         private string Path { get; set; }
@@ -26,10 +27,9 @@ namespace AcademyBot.Objects
             {
                 var personObject = new Person(
                     ulong.Parse(person.Key),
+                    "",
                     admin: bool.Parse(person.Value["Admin"].ToString())
                     );
-                //Console.WriteLine(person.Value["Roles"].ToString());
-
                 personObject.AddRolesFromString(person.Value["Roles"].ToString());
                 People.Add(personObject);
             }
@@ -38,9 +38,39 @@ namespace AcademyBot.Objects
 
         public bool SavePeople()
         {
-            // Loads all people into memory as Person objects, then checks for duplicates and appends the remaining to file. 
+            foreach (var person in People)
+            {
+                SavePerson(person);
+            }
+            WriteJson();
             return true;
         }
+
+        public void MakePerson(ulong id, string roles, bool admin = false)
+        {
+            Person person;
+            foreach (var p in People) // Check if the id exists in People
+            {
+                if (p.Id == id) return; // Break out and return nothing
+            }
+            person = new Person(id);
+            person.AddRolesFromString(roles.ToString());
+            person = new Person(id, roles, admin);
+            People.Add(person);
+        }
+
+        public void MakePerson(ulong id, List<ulong> roles, bool admin = false)
+        {
+            Person person;
+            foreach (var p in People) // Check if the id exists in People
+            {
+                if (p.Id == id) return; // Break out and return nothing
+            }
+            person = new Person(id, roles, admin);
+            People.Add(person);
+        }
+
+
 
         public bool WriteJson()
         {
@@ -51,12 +81,18 @@ namespace AcademyBot.Objects
         public bool SavePerson(Person person)
         {
             // Write the given person object to JObject. If the person exists, overwrite with current values
-            // UpdateJobject();
-            // new JProperty("Admin", person.Admin) new JProperty("Roles", person.RoleString())
             var obj = new JObject(
                 new JProperty("Admin", person.Admin),
                 new JProperty("Roles", person.Roles));
-            JsonPeople.Add(person.Id.ToString(), obj);
+            try
+            {
+                JsonPeople.Add(person.Id.ToString(), obj);
+            }
+            catch (System.ArgumentException)
+            {
+                JsonPeople[person.Id.ToString()]["Admin"] = person.Admin.ToString();
+                JsonPeople[person.Id.ToString()]["Roles"] = JArray.Parse(person.RoleString());
+            }
             return true;
         }
 
@@ -77,6 +113,7 @@ namespace AcademyBot.Objects
                 var jRoles = person["Roles"].Children();
                 foreach (var role in jRoles)
                 {
+                    Console.WriteLine(role.ToString());
                     roles.Add(ulong.Parse(role.ToString()));
                 }
                 return new Person(id, roles, bool.Parse(person["Admin"].ToString()));
@@ -86,8 +123,6 @@ namespace AcademyBot.Objects
                 Console.WriteLine(e.Message.ToString());
             }
             return null;
-
-            //if ()
         }
 
         public Person GetPerson(ulong id)

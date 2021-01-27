@@ -17,6 +17,8 @@ namespace AcademyBot
         private bool debug;
         private JObject IDs = JObject.Parse(File.ReadAllText(@"../../../json/id.json"));
 
+        public static readonly ulong adminId = 800061035398037524;
+
         #region serverIDs
         private readonly ulong serverID = 694326574601994350;
         #endregion
@@ -27,9 +29,9 @@ namespace AcademyBot
         private readonly ulong botErrorChannelID = 800066416518365206;
         #endregion
 
-        #region guildObjects
-        public static SocketGuild server;
-
+        #region Channel & guildObjects
+        private static SocketGuild server; //Edit
+        private SocketChannel general;
         #endregion
 
         private DiscordSocketClient client;
@@ -43,6 +45,7 @@ namespace AcademyBot
         public static Messenger MessageService { get; private set; }
         public Population People { get; set; }
         public static Updater UpdateModule { get; set; }
+        public static List<SocketGuildUser> LoadedUsers { get; set; }
         #endregion
 
         public static void Main(string[] args)
@@ -62,6 +65,7 @@ namespace AcademyBot
             client.Log += Log; //Subscribe to the Logging method
             client.Ready += ReadyAsync; // Channel and server client objects can only be loaded after the bot has completed startup!!!
             client.ReactionAdded += ReactToReaction;
+            client.UserJoined += UpdateLoadedUsers;
 
 
             People = new Population();
@@ -86,6 +90,69 @@ namespace AcademyBot
 
         }
 
+        private Task UpdateLoadedUsers(SocketGuildUser arg)
+        // Adds the recently joined user if it's not found already in loaded Users
+        {
+            if (!LoadedUsers.Contains(arg)) LoadedUsers.Add(arg);             
+            return Task.CompletedTask;
+        }
+
+        private Person GetPerson(ulong id)
+        // Returns the person object based on given id. If it does not exist, return null
+        {
+            foreach (var person in People.People)
+            {
+                if (person.Id == id) return person;
+            }
+            return null;
+        }
+
+        private Person ConvertSocketUserToPerson(SocketGuildUser user) // Not needed. Implemented in Population.cs!!!
+        {
+            var roleString = "";
+            foreach (var role in user.Roles)
+            {
+                roleString += $"{role.Id},";
+            }
+            return new Person(user.Id, roleString);
+        }
+
+        private void SavePopulation()
+        {
+            // Converts all socketGuildUsers in LoadedUsers into Person objects in Population, then runs write to json
+            foreach (var user in LoadedUsers)
+            {
+                var roleString = "";
+                foreach (var role in user.Roles)
+                {
+                    roleString += $"{role.Id.ToString()},";
+                }
+                People.MakePerson(user.Id, roleString, false); 
+            }
+            //People.SavePeople();
+        }
+
+        private List<SocketGuildUser> GetServerUsers(SocketGuild guild)
+        {
+            var users = new List<SocketGuildUser>();
+            var serverUsers = guild.Users;
+            foreach (var user in serverUsers)
+            {
+                users.Add(user);
+            }
+            return users;
+        }
+
+        public static void ReloadUsers()
+        {
+            var userList = new List<SocketGuildUser>();
+            foreach (var user in server.Users)
+            {
+                userList.Add(user);
+            }
+            LoadedUsers = userList;
+        }
+
         private async Task<Task> ReactToReaction(Cacheable<IUserMessage, ulong> arg1, ISocketMessageChannel arg2, SocketReaction arg3)
         {
             var invokingUser = client.GetGuild(serverID).GetUser(arg3.UserId);
@@ -106,22 +173,36 @@ namespace AcademyBot
         private async Task<Task> ReadyAsync() // Loads Objects after the bot is done initializing
         {
             server = client.GetGuild(serverID);
+            general = server.GetChannel(generalTextID);
             MessageService = new Messenger(client, serverID, generalTextID, botChannelID, botErrorChannelID);
             UpdateModule = new Updater("AcademyBot.sln");
+            LoadedUsers = new List<SocketGuildUser>();
+
             await MessageService.SendAsync(
                 ulong.Parse(IDs["TextChannels"]["General"].ToString()),
                 "Bot is now up and running!"
                 );
 
+            LoadedUsers = GetServerUsers(server);
+            
+            //SavePopulation(); // Write all current users in server to Json THIS IS NOT FUNC
+            foreach (var p  in People.People)
+            {
+                Console.WriteLine(p);
+            }
+            foreach (var u in LoadedUsers)
+            {
+                Console.WriteLine(u.Id);
+            }
             if (debug)
             {
                 await MessageService.SendEmbedAsync(
-                ulong.Parse(IDs["TextChannels"]["Bot"].ToString()),
-                "DebugMSG",
-                new Dictionary<string, string>[] {
-                    Messenger.MakeFieldDict("Action", "Startup"),
-                    Messenger.MakeFieldDict("Time", DateTime.Now.ToLongTimeString())}
-                   );
+                    ulong.Parse(IDs["TextChannels"]["Bot"].ToString()),
+                    "DebugMSG",
+                    new Dictionary<string, string>[] { 
+                        Messenger.MakeFieldDict("Action", "Startup"),
+                        Messenger.MakeFieldDict("Time", DateTime.Now.ToLongTimeString())}
+                       );
             }
 
             return Task.CompletedTask;
