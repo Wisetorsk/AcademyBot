@@ -45,6 +45,28 @@ namespace AcademyBot.Objects
             WriteJson();
             return true;
         }
+        public bool SavePerson(Person person)
+        {
+            // Write the given person object to JObject. If the person exists, overwrite with current values
+            var obj = new JObject(
+                new JProperty("Admin", person.Admin),
+                new JProperty("Roles", person.Roles.ToArray()));
+            try
+            {
+                JsonPeople.Add(person.Id.ToString(), obj);
+            }
+            catch (System.ArgumentException)
+            {
+                JsonPeople[person.Id.ToString()]["Admin"] = person.Admin;
+                JArray jarrayObj = new JArray();
+                foreach (var r in person.Roles)
+                {
+                    jarrayObj.Add(r);
+                }
+                JsonPeople[person.Id.ToString()]["Roles"] = jarrayObj;
+            }
+            return true;
+        }
 
         public void MakePerson(ulong id, string roles, bool admin = false)
         {
@@ -70,29 +92,9 @@ namespace AcademyBot.Objects
             People.Add(person);
         }
 
-
-
         public bool WriteJson()
         {
             File.WriteAllText(Path, JsonPeople.ToString());
-            return true;
-        }
-
-        public bool SavePerson(Person person)
-        {
-            // Write the given person object to JObject. If the person exists, overwrite with current values
-            var obj = new JObject(
-                new JProperty("Admin", person.Admin),
-                new JProperty("Roles", person.Roles));
-            try
-            {
-                JsonPeople.Add(person.Id.ToString(), obj);
-            }
-            catch (System.ArgumentException)
-            {
-                JsonPeople[person.Id.ToString()]["Admin"] = person.Admin.ToString();
-                JsonPeople[person.Id.ToString()]["Roles"] = JArray.Parse(person.RoleString());
-            }
             return true;
         }
 
@@ -110,7 +112,7 @@ namespace AcademyBot.Objects
             {
                 var person = JsonPeople[id.ToString()]; // id
                 var roles = new List<ulong>();
-                var jRoles = person["Roles"].Children();
+                var jRoles = person["Roles"].ToString();
                 foreach (var role in jRoles)
                 {
                     Console.WriteLine(role.ToString());

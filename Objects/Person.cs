@@ -59,12 +59,11 @@ namespace AcademyBot.Objects
 
         public bool AddRolesFromString(string roleInputString)
         {
-            if (roleInputString.Length < 10)
+            if (roleInputString.Length < 5)
             {
-                //Console.WriteLine("no Roles Found");
                 return false;
             };
-            var stringRoles = roleInputString.Split(',');
+            var stringRoles = roleInputString.Replace("[", "").Replace("]", "").Split(',');
             foreach (var role in stringRoles)
             {
                 var result = ulong.TryParse(role, out ulong roleUlong);
