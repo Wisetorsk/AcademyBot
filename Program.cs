@@ -74,10 +74,6 @@ namespace AcademyBot
             {
                 Console.WriteLine(p.ToString());
             }
-            //var testPerson = new Person(12341234, new List<ulong>() {1111111111111111, 2222222222222222 }, false);
-            //Console.WriteLine(People.LoadPerson(112955646701297664));
-            //People.SavePerson(testPerson);
-            //People.WriteJson();
 
 
             var token = File.ReadAllText("../../../../token.txt");
